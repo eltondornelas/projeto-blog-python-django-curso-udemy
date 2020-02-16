@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block titulo %}
 
@@ -76,11 +77,7 @@
                 {% endfor %}
 
                 {% for visible_field in form.visible_fields %}
-                    <div class="form-group">                        
-                        {{ visible_field.label_tag}} <br>  <!-- o br não é o ideal para deixar o nome em cima do label-->
-                        {{ visible_field }}
-                        {{ visible_field.errors }}
-                    </div>
+                    {{ visible_field | as_crispy_field }}
                 {% endfor %}
 
                
