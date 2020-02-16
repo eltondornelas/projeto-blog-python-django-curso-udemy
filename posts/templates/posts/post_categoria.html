@@ -1,56 +1,7 @@
-{% extends 'base.html' %}
-{% load humanize %}
+{% extends 'posts/index.html' %}
 
-{% block titulo %}Categoria{% endblock titulo %}
+{% block titulo %}
 
- {% block conteudo %}
+    {{view.kwargs.categoria|title}} | Categoria | 
 
-    <!-- CONTENT -->
-    <div class="card-columns mt-4">
-
-        {% for post in posts %}
-        <!-- post eh o objeto que quer trazer pra ca
-        posts eh o iteravel que esta no views-->
-        
-        <div class="card">
-
-            
-            {% if post.imagem_post %}
-            <a href="{% url 'post_detalhes' post.id %}">
-                <img class="card-img-top"
-                    src=" {{ post.imagem_post.url }}"
-                    alt="{{ post.titulo_post }}">
-            </a>
-            {% endif %}
-
-            <div class="card-body">
-                <h5 class="card-title">
-                    <a href="{% url 'post_detalhes' post.id %}">
-                        {{ post.titulo_post }}
-                    </a>
-                </h5>
-                <p class="card-text">{{ post.excerto_post }}</p>
-                <p class="card-text">
-                    <small class="text-muted">
-                        {{ post.data_post | naturalday | title }} 
-                        | 
-                        <!--{{ post.comentario_set.count }} comentário(s)-->
-                        {{ post.numero_comentarios }} comentário(s)
-                        | 
-                        {{ post.categoria_post }}</small>
-                </p>
-
-                <div class="text-right">
-                    <a href="{% url 'post_detalhes' post.id %}" class="btn btn-outline-secondary">Ler mais...</a>
-                </div>
-            </div>
-        </div>
-
-        {% endfor %}
-
-    </div>
-    <!--/CONTENT-->
-
-    {% include 'parciais/_pagination.html' %}
-
-{% endblock conteudo %}
+{% endblock titulo %}

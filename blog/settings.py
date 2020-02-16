@@ -143,3 +143,8 @@ MESSAGE_TAGS = {
 }
 
 # INSTALLED_APPS += ('django_summernote', )
+
+try:
+    from .local_settings import *
+except:
+    pass
