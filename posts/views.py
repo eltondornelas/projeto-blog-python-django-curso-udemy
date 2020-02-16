@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.list import ListView
 from django.views.generic.edit import UpdateView
 from .models import Post
@@ -7,9 +7,11 @@ from comentarios.forms import FormComentario
 from comentarios.models import Comentario
 from django.contrib import messages
 from django.db import connection
+from django.views import View
 
 
 class PostIndex(ListView):
+    # ListView é usada para ver uma lista de objetos
     model = Post
     template_name = 'posts/index.html'
     paginate_by = 3
@@ -96,6 +98,42 @@ class PostCategoria(PostIndex):
         return qs
 
 
+class PostDetalhes(View):
+    template_name = 'posts/post_detalhes.html'
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+
+        pk = self.kwargs.get('pk')
+        post = get_object_or_404(Post, pk=pk, publicado_post=True)
+        self.contexto = {
+            'post': post,
+            'comentarios': Comentario.objects.filter(post_comentario=post, publicado_comentario=True),
+            'form': FormComentario(request.POST or None),
+        }
+    
+    def  get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.contexto)
+
+    def post(self, request, *args, **kwargs):
+        form = self.contexto['form']
+        
+        if not form.is_valid():
+            return render(request, self.template_name, self.contexto)
+        
+        comentario = form.save(commit=False)  # salva, mas não armazena na base de dados
+
+        if request.user.is_authenticated:
+            comentario.usuario_comentario = request.user
+            # armazena no usuário caso ele seja autenticado
+
+        comentario.post_comentario = self.contexto['post']
+        comentario.save()
+        messages.success(request, 'Seu comentário foi enviado para revisão.')
+        return redirect('post_detalhes', pk=self.kwargs.get('pk'))
+
+
+'''
 class PostDetalhes(UpdateView):
     # UpdateView espera um formulário porém, vamos usar o form de comentario
     template_name = 'posts/post_detalhes.html'
@@ -131,6 +169,5 @@ class PostDetalhes(UpdateView):
         
         return redirect('post_detalhes', pk=post.id)
 
-
-
+'''
     
