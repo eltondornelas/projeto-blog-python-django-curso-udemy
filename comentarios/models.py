@@ -5,11 +5,13 @@ from django.utils import timezone
 
 
 class Comentario(models.Model):
-    nome_comentario = models.CharField(max_length=150)
-    email_comentario = models.EmailField()
-    comentario = models.TextField()
+    # verbosa_name modifica como aparecerá os nomes no formulário na renderização da página
+    nome_comentario = models.CharField(max_length=150, verbose_name='Nome')
+    email_comentario = models.EmailField(verbose_name='E-mail')
+    comentario = models.TextField(verbose_name='Comentário')
     post_comentario = models.ForeignKey(Post, on_delete=models.CASCADE)
-    usuario_comentario = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    usuario_comentario = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=True, null=True)
+    # mesmo que usuário não esteja logado, quero permitir que ele consiga comentar
     data_comentario = models.DateTimeField(default=timezone.now)
     publicado_comentario = models.BooleanField(default=False)
 
