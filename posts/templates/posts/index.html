@@ -40,6 +40,7 @@
                         <!--o | plural_comentarios está chamando um filtro que é um método com este nome em esd_filters-->
                         | 
                         {{ post.categoria_post }}</small>
+                        <!-- esse categoria não é do post, ele vai buscar no bd a categoria que esta relacionada a categoria_post-->
                 </p>
 
                 <div class="text-right">
@@ -52,6 +53,11 @@
 
     </div>
     <!--/CONTENT-->
+    <!--
+    {{ connection.queries|length }}
+    
+    <p>{{ connection.queries }}</p>
+    -->
 
     {% include 'parciais/_pagination.html' %}
 

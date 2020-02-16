@@ -6,6 +6,7 @@ from django.db.models import Q, Count, Case, When
 from comentarios.forms import FormComentario
 from comentarios.models import Comentario
 from django.contrib import messages
+from django.db import connection
 
 
 class PostIndex(ListView):
@@ -16,6 +17,8 @@ class PostIndex(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        qs = qs.select_related('categoria_post')  
+        # campo que tem a fk para categoria e com isso já melhora a performance
         qs = qs.order_by('-id').filter(publicado_post=True)
 
         # anotação SQL
@@ -28,6 +31,22 @@ class PostIndex(ListView):
         )
         
         return qs
+
+    '''
+     -> essa função é apenas para mostrar no index através do {{ connection.queries|length }}, 
+        quantas consultas são feitas para carregar aqueles poucos posts, que podem ser feitos
+        com apenas 1 consulta.
+     -> o que acontece é que por a categoria ser uma fk do post, ele precisa ir na tabela de categoria e seleciona
+        o nome dessa categoria, causando entr 7 e 10 consultas para apenas 3 posts na página
+     -> para combater isso utiliza o select_related() que melhora a performance, olhar os docs no site do django.
+    '''
+    '''
+    def get_context_data(self, *, object_list=None, **kwargs):
+        contexto = super().get_context_data(**kwargs)
+        contexto['connection'] = connection
+
+        return contexto
+    '''
 
 
 class PostBusca(PostIndex):
